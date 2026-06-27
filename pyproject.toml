@@ -1,0 +1,16 @@
+[project]
+name = "cg-lab8"
+version = "0.1.0"
+description = "LBS (Linear Blend Skinning) Lab"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.0.0",
+    "numpy>=1.24.0",
+    "matplotlib>=3.7.0",
+    "smplx>=0.1.28",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
