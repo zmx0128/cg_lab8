@@ -24,4 +24,3 @@ build/
 *~
 models/
 *.pkl
-outputs/
