@@ -2,16 +2,6 @@
 
 ---
 
-## 📋 目录
-
-| 序号 | 章节 | 内容 |
-|------|------|------|
-| 一 | 🎯 实验目的 | 明确实验目标和学习要求 |
-| 二 | 🧠 实验原理 | LBS 四个阶段详解 + 核心公式推导 |
-| 三 | 🛠️ 实验环境配置 | Conda 环境搭建与模型准备 |
-| 四 | 📝 实验步骤与结果 | 七个任务的详细说明和可视化分析 |
-| 五 | 🎬 选做内容：姿态动画 | 动画设置与观察效果 |
-| 六 | 💡 思考问题回答 | 全部思考问题的详细解答 |
 | 七 | ✨ 结论 | 实验成果总结 |
 | 八 | 📂 项目结构 | 完整目录树 |
 | 九 | 🚀 运行命令 | 实验和动画的运行方式 |
@@ -215,7 +205,9 @@ model = smplx.create(
 - 从 `lbs_weights` 中选取一个关节（实验中选择关节 ID 18，即左肩）
 - 把"该关节对所有顶点的影响权重"可视化成颜色
 
-**输出文件：** `outputs/stage_a_template_weights.png`
+**输出图片：**
+
+![模板网格与蒙皮权重](outputs/stage_a_template_weights.png)
 
 **结果分析：**
 - 🎨 颜色越明显（接近黄色/白色）表示该关节对该区域的影响越强
@@ -230,7 +222,9 @@ face_colors = get_face_colors_from_vertex_scalar(weight_scalar, faces)  # 转成
 
 #### (2) 全关节主导权重分布图（可选） 🌈
 
-**输出文件：** `outputs/all_joint_weights.png`
+**输出图片：**
+
+![全关节主导权重分布](outputs/all_joint_weights.png)
 
 **结果分析：**
 - 每个面片根据"主导影响关节"分配不同颜色
@@ -246,7 +240,9 @@ face_colors = get_face_colors_from_vertex_scalar(weight_scalar, faces)  # 转成
 - 利用 `J_regressor` 从 `v_shaped` 中回归关节 `J`
 - 在同一张图中显示形状变化后的网格和回归出的关节点
 
-**输出文件：** `outputs/stage_b_shaped_joints.png`
+**输出图片：**
+
+![形状校正与关节回归](outputs/stage_b_shaped_joints.png)
 
 **结果分析：**
 - 📐 形状变化后的网格与模板网格相比，体型发生了明显变化（变高、变瘦、肩宽调整）
@@ -276,7 +272,9 @@ J = vertices2joints(J_regressor, v_shaped)
 
 **注意：** 这一步**还不是最终蒙皮结果**，只是说明网格本身已经因为姿态发生了额外修正。
 
-**输出文件：** `outputs/stage_c_pose_offsets.png`
+**输出图片：**
+
+![姿态校正](outputs/stage_c_pose_offsets.png)
 
 **姿态参数设置：**
 | 关节 | 旋转角度 | 效果 |
@@ -303,7 +301,9 @@ J = vertices2joints(J_regressor, v_shaped)
 - 得到最终顶点 `verts`
 - 可视化最终姿态下的网格与关节位置
 
-**输出文件：** `outputs/stage_d_lbs_result.png`
+**输出图片：**
+
+![完整 LBS 结果](outputs/stage_d_lbs_result.png)
 
 **结果分析：**
 - 🎬 人体已进入最终姿态，网格随骨骼运动而变形
@@ -327,7 +327,9 @@ verts = v_homo[:, :, :3, 0]
 - (c) pose offsets
 - (d) final skinned mesh
 
-**输出文件：** `outputs/comparison_grid.png`
+**输出图片：**
+
+![四阶段对比图](outputs/comparison_grid.png)
 
 **对比分析：**
 | 阶段 | 标题 | 状态描述 |
@@ -388,6 +390,10 @@ max_err = diff.max().item()
 | 帧率 | 30 FPS | 流畅度适中 |
 
 ### 5.2 输出结果 📁
+
+**输出动画：**
+
+![姿态动画](outputs2/animation.gif)
 
 **输出文件：**
 - `outputs2/animation.gif` 🎉 - 30帧 GIF 动画（循环播放）
