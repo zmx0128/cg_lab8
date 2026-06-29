@@ -1,22 +1,14 @@
-# 🌟 SMPL 线性混合蒙皮（LBS）实验报告 🌟
-
----
-
-| 七 | ✨ 结论 | 实验成果总结 |
-| 八 | 📂 项目结构 | 完整目录树 |
-| 九 | 🚀 运行命令 | 实验和动画的运行方式 |
-| 十 | 📚 参考文献 | SMPL 论文和官网 |
-
+#SMPL 线性混合蒙皮（LBS）实验报告 
 ---
 
 ## 🎯 一、实验目的
 
 本实验基于 **SMPL（Skinned Multi-Person Linear Model）** 模型完成一次完整的 **Linear Blend Skinning（LBS）** 蒙皮过程可视化，具体目标包括：
 
-1. 🤔 **理解参数化人体模型**：掌握模板网格、形状参数、姿态参数、关节回归器和蒙皮权重之间的关系
-2. 🔍 **深入理解 LBS 四个阶段**：模板网格与权重 → 形状校正 → 姿态校正 → 完整蒙皮
-3. 🖥️ **学会调用 SMPL 模型**：将官方 `lbs()` 实现中的关键中间量单独提取出来进行可视化
-4. ✅ **验证手写 LBS 实现**：确保手写代码与官方前向结果的一致性
+1. **理解参数化人体模型**：掌握模板网格、形状参数、姿态参数、关节回归器和蒙皮权重之间的关系
+2. **深入理解 LBS 四个阶段**：模板网格与权重 → 形状校正 → 姿态校正 → 完整蒙皮
+3. **学会调用 SMPL 模型**：将官方 `lbs()` 实现中的关键中间量单独提取出来进行可视化
+4. **验证手写 LBS 实现**：确保手写代码与官方前向结果的一致性
 
 ---
 
@@ -24,7 +16,7 @@
 
 ### 2.1 LBS 四个阶段详解
 
-#### (a) 模板网格与蒙皮权重 🎭
+#### (a) 模板网格与蒙皮权重
 
 初始状态是模板人体网格 $$\bar{T}$$，通常处于 **T-pose**（站立姿势，双臂平伸）。
 
@@ -37,7 +29,7 @@
 
 在 `lbs()` 实现中，最终每个顶点的 4×4 变换矩阵，就是由这些 `lbs_weights` 对各关节变换矩阵加权得到的。
 
-#### (b) 形状校正 $$B_S(\beta)$$ 👤
+#### (b) 形状校正 $$B_S(\beta)$$
 
 形状参数 $$\beta$$ 控制"这个人长什么样"。例如高矮、胖瘦、肩宽、腿长等，都可以由形状空间中的若干系数表示。
 
@@ -55,7 +47,7 @@ J = vertices2joints(J_regressor, v_shaped)
 
 **关键理解：** 关节位置不是固定常数，而是由形状后的网格**回归出来的**。
 
-#### (c) 姿态校正 $$B_P(\theta)$$ 🦾
+#### (c) 姿态校正 $$B_P(\theta)$$ 
 
 蒙皮并非把骨骼旋转一下，皮肤跟着转这么简单。因为人体在弯曲时，肩膀、肘部、膝盖附近会出现额外的几何变化（如肌肉鼓起），仅靠骨骼刚体旋转无法表达。
 
@@ -70,7 +62,7 @@ pose_offsets = torch.matmul(pose_feature, posedirs).view(...)
 v_posed = pose_offsets + v_shaped
 ```
 
-#### (d) 线性混合蒙皮 $$W(\cdot)$$ ✨
+#### (d) 线性混合蒙皮 $$W(\cdot)$$ 
 
 经过上述步骤，我们已经有了：
 - 已经考虑形状的关节位置 $$J(\beta)$$
@@ -91,8 +83,7 @@ verts = v_homo[:, :, :3, 0]
 
 **关键理解：** 每个顶点最终不是只跟着一个关节走，而是跟着多个关节做**加权平均后的变换**。这也是"Linear Blend Skinning"名字的来源。
 
-### 2.2 五个核心对象对照表 📊
-
+### 2.2 五个核心对象对照表 
 | 对象 | 含义 | 阶段 | 状态 |
 |------|------|------|------|
 | `v_template` | 模板顶点（T-pose） | (a) | 原始网格，未变形 |
@@ -101,7 +92,7 @@ verts = v_homo[:, :, :3, 0]
 | `v_posed` | 加了姿态校正后的顶点 | (c) | 体型+姿态校正，未蒙皮 |
 | `verts` | 完成 LBS 之后的最终顶点 | (d) | 完整蒙皮结果 |
 
-### 2.3 LBS 流程图 🔄
+### 2.3 LBS 流程图 
 
 ```
 v_template ──(形状混合)──→ v_shaped ──(关节回归)──→ J
@@ -120,7 +111,7 @@ v_template ──(形状混合)──→ v_shaped ──(关节回归)──→ 
 
 ## 🛠️ 三、实验环境配置
 
-### 3.1 环境要求 📦
+### 3.1 环境要求 
 
 | 依赖 | 版本 | 用途 |
 |------|------|------|
@@ -130,7 +121,7 @@ v_template ──(形状混合)──→ v_shaped ──(关节回归)──→ 
 | Matplotlib | 最新版 | 可视化 |
 | SMPLX | 最新版 | SMPL 模型加载库 |
 
-### 3.2 安装步骤 📥
+### 3.2 安装步骤 
 
 **第一步：安装 Conda**
 ```bash
@@ -154,7 +145,7 @@ pip install torch
 pip install numpy matplotlib smplx
 ```
 
-### 3.3 模型文件准备 🗂️
+### 3.3 模型文件准备 
 
 将 SMPL 模型文件 `SMPL_NEUTRAL.pkl` 放置于以下目录：
 
@@ -170,7 +161,7 @@ models/smpl/SMPL_NEUTRAL.pkl
 
 ## 📝 四、实验步骤与结果
 
-### 任务 1：成功加载 SMPL，并输出基础信息 🚀
+### 任务 1：成功加载 SMPL，并输出基础信息 
 
 使用 `smplx.create()` 加载 SMPL 模型，指定：
 - `model_type='smpl'`
@@ -196,9 +187,9 @@ model = smplx.create(
 )
 ```
 
-### 任务 2：可视化模板网格与蒙皮权重 🎨
+### 任务 2：可视化模板网格与蒙皮权重 
 
-#### (1) 单关节权重热力图 🔥
+#### (1) 单关节权重热力图
 
 **实验要求：**
 - 显示模板网格 $$\bar{T}$$
@@ -220,7 +211,7 @@ weight_scalar = model.lbs_weights[:, joint_id]  # 获取关节权重
 face_colors = get_face_colors_from_vertex_scalar(weight_scalar, faces)  # 转成颜色
 ```
 
-#### (2) 全关节主导权重分布图（可选） 🌈
+#### (2) 全关节主导权重分布图
 
 **输出图片：**
 
@@ -232,7 +223,7 @@ face_colors = get_face_colors_from_vertex_scalar(weight_scalar, faces)  # 转成
 - 颜色明暗表示该主导权重的强弱
 - 从图中可以看出 SMPL 的模板网格在初始状态下已经携带了完整的关节影响分布信息
 
-### 任务 3：可视化形状校正与关节回归 👤
+### 任务 3：可视化形状校正与关节回归
 
 **实验要求：**
 - 设置非零的形状参数 $$\beta$$，前三个参数设置为：$$\beta_0=2.0$$, $$\beta_1=-1.2$$, $$\beta_2=0.8$$
@@ -245,9 +236,9 @@ face_colors = get_face_colors_from_vertex_scalar(weight_scalar, faces)  # 转成
 ![形状校正与关节回归](outputs/stage_b_shaped_joints.png)
 
 **结果分析：**
-- 📐 形状变化后的网格与模板网格相比，体型发生了明显变化（变高、变瘦、肩宽调整）
-- 🔴 回归出的关节点（白色球体）叠加在身体内部合理位置
-- 🔄 关节位置随体型变化而调整，例如人物变胖时，肩、膝、髋等关节位置也会相应变化
+- 形状变化后的网格与模板网格相比，体型发生了明显变化（变高、变瘦、肩宽调整）
+- 回归出的关节点（白色球体）叠加在身体内部合理位置
+- 关节位置随体型变化而调整，例如人物变胖时，肩、膝、髋等关节位置也会相应变化
 
 **关键代码：**
 ```python
@@ -260,7 +251,7 @@ v_shaped = v_template + blend_shapes(betas, shapedirs)
 J = vertices2joints(J_regressor, v_shaped)
 ```
 
-### 任务 4：可视化姿态校正 $$B_P(\theta)$$ 🦾
+### 任务 4：可视化姿态校正 $$B_P(\theta)$$
 
 **实验要求：**
 - 设置非零姿态 $$\theta$$，包括抬手、弯肘、略微扭转躯干
@@ -289,11 +280,11 @@ J = vertices2joints(J_regressor, v_shaped)
 | 右膝 | [0.20, 0.0, 0.0] | 右膝弯曲 |
 
 **结果分析：**
-- 🎨 将 `pose_offsets` 的大小可视化成颜色，颜色越深表示偏移量越大
-- 📍 姿态校正主要集中在发生弯曲的部位附近（如肘部、膝盖、肩膀）
-- 🧐 这一阶段尚未进行真正的蒙皮，只是说明网格本身已因姿态发生了额外修正
+- 将 `pose_offsets` 的大小可视化成颜色，颜色越深表示偏移量越大
+- 姿态校正主要集中在发生弯曲的部位附近（如肘部、膝盖、肩膀）
+- 这一阶段尚未进行真正的蒙皮，只是说明网格本身已因姿态发生了额外修正
 
-### 任务 5：可视化完整 LBS 结果 ✨
+### 任务 5：可视化完整 LBS 结果
 
 **实验要求：**
 - 根据运动学树计算每个关节的全局刚体变换
@@ -306,9 +297,9 @@ J = vertices2joints(J_regressor, v_shaped)
 ![完整 LBS 结果](outputs/stage_d_lbs_result.png)
 
 **结果分析：**
-- 🎬 人体已进入最终姿态，网格随骨骼运动而变形
-- 🔄 关节位置也发生了变换（`J_transformed`）
-- ✅ LBS 保证了皮肤在关节弯曲时的平滑过渡
+- 人体已进入最终姿态，网格随骨骼运动而变形
+- 关节位置也发生了变换（`J_transformed`）
+- LBS 保证了皮肤在关节弯曲时的平滑过渡
 
 **关键代码：**
 ```python
@@ -319,7 +310,7 @@ v_homo = torch.matmul(T, v_posed_homo.unsqueeze(-1))
 verts = v_homo[:, :, :3, 0]
 ```
 
-### 任务 6：生成总对比图 📷
+### 任务 6：生成总对比图
 
 将四个阶段排成一张 2×2 的对比图，标题清楚标出：
 - (a) template + weights
@@ -339,7 +330,7 @@ verts = v_homo[:, :, :3, 0]
 | (c) | Pose Blend Shapes | 网格因姿态发生局部修正 |
 | (d) | Final LBS Result | 网格随骨骼完成最终变形 |
 
-### 任务 7：手写 LBS 与官方前向结果一致性验证 ✅
+### 任务 7：手写 LBS 与官方前向结果一致性验证 
 
 **实验要求：**
 - 使用与手写实现完全相同的 `betas`、`global_orient` 和 `body_pose`
@@ -356,8 +347,8 @@ verts = v_homo[:, :, :3, 0]
 | 最大绝对误差（Max AE） | **0.0000000000** | 单个顶点的最大误差 |
 
 **结果分析：**
-- 🎉 手写 LBS 实现与官方前向结果**完全一致**，误差为 0
-- ✅ 证明手写实现准确复现了 SMPL 的 LBS 算法
+- 手写 LBS 实现与官方前向结果**完全一致**，误差为 0
+- 证明手写实现准确复现了 SMPL 的 LBS 算法
 
 **验证代码：**
 ```python
@@ -379,7 +370,7 @@ max_err = diff.max().item()
 
 ## 🎬 五、选做内容：姿态动画
 
-### 5.1 动画设置 🎮
+### 5.1 动画设置 
 
 | 设置项 | 值 | 说明 |
 |--------|-----|------|
@@ -389,14 +380,14 @@ max_err = diff.max().item()
 | 帧数 | 30 帧 | 足够平滑的动画 |
 | 帧率 | 30 FPS | 流畅度适中 |
 
-### 5.2 输出结果 📁
+### 5.2 输出结果 
 
 **输出动画：**
 
 ![姿态动画](outputs2/animation.gif)
 
 **输出文件：**
-- `outputs2/animation.gif` 🎉 - 30帧 GIF 动画（循环播放）
+- `outputs2/animation.gif` 🎉 - 30帧 GIF 动画
 - `outputs2/animation.mp4` 🎬 - MP4 视频文件
 - `outputs2/frames/frame_000.png` ~ `frame_029.png` 🖼️ - 30张帧图片
 
@@ -505,28 +496,28 @@ for frame_idx in range(num_frames):
 
 ```
 cg_lab8/                              # 项目根目录
-├── run_lbs_lab.py                    # 🚀 LBS 实验主程序
-├── run_animation.py                  # 🎬 姿态动画脚本
+├── run_lbs_lab.py                    # LBS 实验主程序
+├── run_animation.py                  # 姿态动画脚本
 ├── src/
-│   └── lbs.py                        # 🧠 LBS 相关工具函数
-├── models/                           # 🗂️ 模型文件目录
+│   └── lbs.py                        # LBS 相关工具函数
+├── models/                           # 模型文件目录
 │   └── smpl/
-│       └── SMPL_NEUTRAL.pkl          # 🌟 SMPL 模型文件
-├── outputs/                          # 📊 LBS 实验输出
+│       └── SMPL_NEUTRAL.pkl          # SMPL 模型文件
+├── outputs/                          # LBS 实验输出
 │   ├── stage_a_template_weights.png  # (a) 模板网格 + 权重
 │   ├── stage_b_shaped_joints.png     # (b) 形状校正 + 关节回归
 │   ├── stage_c_pose_offsets.png      # (c) 姿态校正
 │   ├── stage_d_lbs_result.png        # (d) 最终蒙皮结果
-│   ├── comparison_grid.png           # 📷 四阶段对比图
-│   ├── all_joint_weights.png         # 🌈 全关节权重分布图
-│   └── summary.txt                   # 📝 误差验证结果
-├── outputs2/                         # 🎬 动画输出
-│   ├── animation.gif                 # 🎉 GIF 动画
-│   ├── animation.mp4                 # 📺 MP4 视频
-│   └── frames/                       # 🖼️ 帧图片目录
-├── pyproject.toml                    # 📦 项目依赖配置
-├── .gitignore                        # 🚫 Git 忽略配置
-└── README.md                         # 📖 本实验报告
+│   ├── comparison_grid.png           # 四阶段对比图
+│   ├── all_joint_weights.png         # 全关节权重分布图
+│   └── summary.txt                   # 误差验证结果
+├── outputs2/                         # 动画输出
+│   ├── animation.gif                 # GIF 动画
+│   ├── animation.mp4                 # MP4 视频
+│   └── frames/                       # 帧图片目录
+├── pyproject.toml                    # 项目依赖配置
+├── .gitignore                        # Git 忽略配置
+└── README.md                         # 本实验报告
 ```
 
 ---
@@ -557,19 +548,3 @@ python run_animation.py --model-dir ./models --out-dir ./outputs2 --num-frames 3
 - `--fps`：帧率
 
 ---
-
-## 📚 十、参考文献
-
-1. 📖 **Loper, M., Mahmood, N., Romero, J., Pons-Moll, G., & Black, M. J.** (2015). SMPL: A Skinned Multi-Person Linear Model. ACM Trans. Graphics.
-2. 🌐 **SMPL Official Website**: https://smpl.is.tue.mpg.de
-
----
-
-## 🎉 致谢
-
-感谢老师提供的实验教程和参考代码！通过本次实验，我深入理解了 LBS 蒙皮的原理和实现细节，收获颇丰！
-
----
-
-*实验完成日期：2026年6月*
-*作者：[你的名字]*
