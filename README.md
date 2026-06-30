@@ -63,8 +63,7 @@ v_posed = pose_offsets + v_shaped
 - 每个顶点对各关节的权重 $$\mathcal{W}$$
 
 之后进入真正的 LBS：
-$$v_i' = \sum_{k=1}^{K} w_{ik} \, G_k(\theta, J(\beta)) \begin{bmatrix} v_i^{posed} \\ 1 \end{bmatrix}$$
-
+$$v_i' = \sum_{k=1}^{K} w_{ik} \cdot G_k(\theta, J(\beta)) \cdot [v_i^{posed}, 1]^T$$
 **实现思路：**
 ```python
 J_transformed, A = batch_rigid_transform(...)
@@ -74,7 +73,7 @@ v_homo = torch.matmul(T, v_posed_homo.unsqueeze(-1))
 verts = v_homo[:, :, :3, 0]
 ```
 
-**关键理解：** 每个顶点最终不是只跟着一个关节走，而是跟着多个关节做**加权平均后的变换**。这也是"Linear Blend Skinning"名字的来源。
+**关键理解：** 每个顶点最终不是只跟着一个关节走，而是跟着多个关节做加权平均后的变换。
 
 ### 2.2 五个核心对象对照表 
 | 对象 | 含义 | 阶段 | 状态 |
