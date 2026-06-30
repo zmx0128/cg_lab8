@@ -64,6 +64,7 @@ v_posed = pose_offsets + v_shaped
 
 之后进入真正的 LBS：
 $$v_i' = \sum_{k=1}^{K} w_{ik} \cdot G_k(\theta, J(\beta)) \cdot [v_i^{posed}, 1]^T$$
+
 **实现思路：**
 ```python
 J_transformed, A = batch_rigid_transform(...)
